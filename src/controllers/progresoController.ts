@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
 import pool from '../config/database';
-import { AuthRequest } from '../middleware/auth';
+
+interface AuthRequest extends Request {
+  userId?: number;
+}
 
 // Agregar progreso a una sola hoja de ruta
 export const agregarProgreso = async (req: AuthRequest, res: Response) => {

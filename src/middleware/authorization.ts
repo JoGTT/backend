@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 interface AuthRequest extends Request {
   userId?: number;
   userRole?: string;
-  [key: string]: any;
 }
 
 // Middleware para verificar permisos de escritura (crear/editar/eliminar)

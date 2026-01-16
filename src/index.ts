@@ -176,33 +176,6 @@ app.use('/api/historial', historialRoutes);
 app.use('/api/progreso', progresoRoutes);
 
 // =============================================
-// SERVIR FRONTEND ESTÁTICO
-// =============================================
-
-// Determinar ruta del frontend compilado
-const frontendPath = path.join(__dirname, '../../frontend/dist');
-const localFrontendPath = path.join(process.cwd(), 'frontend_dist');
-
-// Usar la ruta que exista
-const distPath = fs.existsSync(frontendPath) ? frontendPath : localFrontendPath;
-
-if (fs.existsSync(distPath)) {
-  console.log(`✅ Sirviendo frontend desde: ${distPath}`);
-  app.use(express.static(distPath));
-  
-  // Ruta catch-all para SPA (debe ir al final)
-  app.get('*', (req, res, next) => {
-    // Si es una ruta API, continuar al manejador 404
-    if (req.path.startsWith('/api/')) {
-      return next();
-    }
-    res.sendFile(path.join(distPath, 'index.html'));
-  });
-} else {
-  console.log(`⚠️  Frontend no encontrado en: ${distPath}`);
-}
-
-// =============================================
 // MANEJO DE ERRORES
 // =============================================
 

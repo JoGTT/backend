@@ -6,6 +6,7 @@ export interface AuthRequest extends Request {
   userId?: number;
   userRole?: string;
   tokenExp?: number;
+  [key: string]: any;
 }
 
 const JWT_SECRET = process.env.JWT_SECRET;

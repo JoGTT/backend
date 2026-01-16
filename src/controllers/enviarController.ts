@@ -3,6 +3,7 @@ import pool from '../config/database';
 
 interface AuthRequest extends Request {
   userId?: number;
+  [key: string]: any;
 }
 
 // POST /api/enviar - Crear nuevo envío con estructura completa

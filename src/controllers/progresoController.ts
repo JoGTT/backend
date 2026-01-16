@@ -1,12 +1,8 @@
 import { Request, Response } from 'express';
 import pool from '../config/database';
 
-interface AuthRequest extends Request {
-  userId?: number;
-}
-
 // Agregar progreso a una sola hoja de ruta
-export const agregarProgreso = async (req: AuthRequest, res: Response) => {
+export const agregarProgreso = async (req: Request, res: Response) => {
   try {
     const { hoja_ruta_id, ubicacion_anterior, ubicacion_actual, notas } = req.body;
     const responsable_id = req.userId;
@@ -64,7 +60,7 @@ export const agregarProgreso = async (req: AuthRequest, res: Response) => {
 };
 
 // Agregar progreso a múltiples hojas de ruta (RÁPIDO - sin recargar)
-export const agregarProgresoMultiple = async (req: AuthRequest, res: Response) => {
+export const agregarProgresoMultiple = async (req: Request, res: Response) => {
   try {
     const { hojas } = req.body; // Array de { hoja_ruta_id, ubicacion_anterior, ubicacion_actual, notas }
     const responsable_id = req.userId;

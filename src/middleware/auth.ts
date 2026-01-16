@@ -2,12 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import logger from '../utils/logger';
 
-interface AuthRequest extends Request {
-  userId?: number;
-  userRole?: string;
-  tokenExp?: number;
-}
-
 const JWT_SECRET = process.env.JWT_SECRET;
 const TOKEN_EXPIRY = process.env.TOKEN_EXPIRY || '1h';
 
@@ -19,7 +13,7 @@ if (!JWT_SECRET || JWT_SECRET === 'default-secret') {
   });
 }
 
-export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -133,7 +127,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
 };
 
 // Middleware para refresh tokens (opcional para implementar)
-export const refreshToken = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const refreshToken = (req: Request, res: Response, next: NextFunction) => {
   try {
     const { refreshToken } = req.body;
 

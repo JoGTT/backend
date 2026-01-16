@@ -1,13 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-interface AuthRequest extends Request {
-  userId?: number;
-  userRole?: string;
-}
-
 // Middleware para verificar permisos de escritura (crear/editar/eliminar)
-export const requireWriteAccess = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const requireWriteAccess = (req: Request, res: Response, next: NextFunction) => {
   const userRole = req.userRole;
   
   console.log('🔐 Verificando permisos de escritura:', {
@@ -32,7 +27,7 @@ export const requireWriteAccess = (req: AuthRequest, res: Response, next: NextFu
 };
 
 // Middleware para verificar permisos de lectura (todos los usuarios autenticados)
-export const requireReadAccess = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const requireReadAccess = (req: Request, res: Response, next: NextFunction) => {
   const userRole = req.userRole;
   
   console.log('📖 Verificando permisos de lectura:', {
@@ -53,7 +48,7 @@ export const requireReadAccess = (req: AuthRequest, res: Response, next: NextFun
 };
 
 // Middleware para verificar permisos de administrador
-export const requireAdminAccess = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const requireAdminAccess = (req: Request, res: Response, next: NextFunction) => {
   const userRole = req.userRole;
   
   console.log('👑 Verificando permisos de administrador:', {

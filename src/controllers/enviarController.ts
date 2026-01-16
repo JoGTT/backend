@@ -1,12 +1,8 @@
 import { Request, Response } from 'express';
 import pool from '../config/database';
 
-interface AuthRequest extends Request {
-  userId?: number;
-}
-
 // POST /api/enviar - Crear nuevo envío con estructura completa
-export const crearEnvio = async (req: AuthRequest, res: Response) => {
+export const crearEnvio = async (req: Request, res: Response) => {
   try {
     const usuarioId = req.userId;
     const { 
@@ -129,7 +125,7 @@ export const crearEnvio = async (req: AuthRequest, res: Response) => {
 };
 
 // GET /api/enviar - Listar envíos
-export const listarEnvios = async (req: AuthRequest, res: Response) => {
+export const listarEnvios = async (req: Request, res: Response) => {
   try {
     const query = `
       SELECT 
@@ -164,7 +160,7 @@ export const listarEnvios = async (req: AuthRequest, res: Response) => {
 };
 
 // PUT /api/enviar/:id/estado - Actualizar estado de envío
-export const actualizarEstadoEnvio = async (req: AuthRequest, res: Response) => {
+export const actualizarEstadoEnvio = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { estado, fecha_entrega } = req.body;
@@ -263,7 +259,7 @@ export const actualizarEstadoEnvio = async (req: AuthRequest, res: Response) => 
 };
 
 // GET /api/enviar/destinos - Obtener destinos disponibles
-export const obtenerDestinos = async (req: AuthRequest, res: Response) => {
+export const obtenerDestinos = async (req: Request, res: Response) => {
   try {
     const query = `
       SELECT id, nombre, descripcion, COALESCE(NULLIF(tipo, ''), 'centro_acogida') AS tipo

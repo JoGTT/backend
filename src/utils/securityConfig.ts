@@ -262,7 +262,7 @@ export const detectMaliciousInput = (input: string): boolean => {
 // =====================================================
 
 const corsAllowlist = (() => {
-  const raw = process.env.CORS_ORIGINS || process.env.RAILWAY_STATIC_URL || 'http://localhost:5173';
+  const raw = process.env.CORS_ORIGINS || process.env.RAILWAY_STATIC_URL || 'http://localhost:5173,https://hojaruta.netlify.app';
   return raw
     .split(',')
     .map(o => o.trim())

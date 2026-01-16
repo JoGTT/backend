@@ -28,7 +28,20 @@ import historialRoutes from './routes/historial';
 import progresoRoutes from './routes/progreso';
 import pool from './config/database';
 
-dotenv.config();
+// Cargar variables de entorno desde múltiples ubicaciones
+const envPath = path.join(process.cwd(), '.env');
+const envProductionPath = path.join(process.cwd(), '.env.production');
+
+if (fs.existsSync(envPath)) {
+  console.log('📄 Cargando .env desde:', envPath);
+  dotenv.config({ path: envPath });
+} else if (fs.existsSync(envProductionPath)) {
+  console.log('📄 Cargando .env.production desde:', envProductionPath);
+  dotenv.config({ path: envProductionPath });
+} else {
+  console.log('⚠️  No se encontró archivo .env, usando variables del sistema');
+  dotenv.config();
+}
 
 // Función para crear tabla progreso_hojas_ruta si no existe
 const initializeProgresoTable = async () => {
@@ -161,6 +174,33 @@ app.use('/api/notificaciones', notificacionesRoutes);
 app.use('/api/enviar', enviarRoutes);
 app.use('/api/historial', historialRoutes);
 app.use('/api/progreso', progresoRoutes);
+
+// =============================================
+// SERVIR FRONTEND ESTÁTICO
+// =============================================
+
+// Determinar ruta del frontend compilado
+const frontendPath = path.join(__dirname, '../../frontend/dist');
+const localFrontendPath = path.join(process.cwd(), 'frontend_dist');
+
+// Usar la ruta que exista
+const distPath = fs.existsSync(frontendPath) ? frontendPath : localFrontendPath;
+
+if (fs.existsSync(distPath)) {
+  console.log(`✅ Sirviendo frontend desde: ${distPath}`);
+  app.use(express.static(distPath));
+  
+  // Ruta catch-all para SPA (debe ir al final)
+  app.get('*', (req, res, next) => {
+    // Si es una ruta API, continuar al manejador 404
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+} else {
+  console.log(`⚠️  Frontend no encontrado en: ${distPath}`);
+}
 
 // =============================================
 // MANEJO DE ERRORES

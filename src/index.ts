@@ -59,13 +59,30 @@ const initializeProgresoTable = async () => {
 };
 
 // Validar variables de entorno críticas
-validateCriticalEnvVars();
+try {
+  validateCriticalEnvVars();
+} catch (error: any) {
+  logger.error({
+    message: 'Error en validación de variables de entorno',
+    error: error.message
+  });
+  console.error('❌ ERROR:', error.message);
+  process.exit(1);
+}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const IS_DEV = NODE_ENV !== 'production';
 const MAX_PAYLOAD = process.env.PAYLOAD_MAX_SIZE || '5mb';
+
+// Log de inicio
+console.log('🚀 Iniciando servidor...');
+console.log('📝 Variables configuradas:');
+console.log(`   - PORT: ${PORT}`);
+console.log(`   - NODE_ENV: ${NODE_ENV}`);
+console.log(`   - DB_HOST: ${process.env.DB_HOST}`);
+console.log(`   - DB_NAME: ${process.env.DB_NAME}`);
 
 // =============================================
 // MIDDLEWARE DE SEGURIDAD
@@ -192,8 +209,15 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 // INICIAR SERVIDOR
 // =============================================
 
-const startServer = () => {
+const startServer = async () => {
   try {
+    console.log('🔧 Configurando servidor...');
+    
+    // Inicializar tablas antes de iniciar el servidor
+    console.log('📊 Inicializando tablas de base de datos...');
+    await initializeProgresoTable();
+    console.log('✅ Tablas inicializadas correctamente');
+    
     // HTTPS en producción
     if (NODE_ENV === 'production' && process.env.SSL_KEY && process.env.SSL_CERT) {
       const keyPath = path.resolve(process.env.SSL_KEY);
@@ -205,10 +229,8 @@ const startServer = () => {
         
         const httpsServer = https.createServer({ key, cert }, app);
         
-        httpsServer.listen(PORT, async () => {
-          // Inicializar tablas
-          await initializeProgresoTable();
-          
+        httpsServer.listen(PORT, () => {
+          console.log(`✅ Servidor HTTPS corriendo en puerto ${PORT}`);
           logger.info({
             message: 'Servidor HTTPS iniciado exitosamente',
             port: PORT,
@@ -236,13 +258,13 @@ const startServer = () => {
         throw new Error('Archivos SSL no encontrados en las rutas especificadas');
       }
     } else {
-      // HTTP en desarrollo
-      const server = app.listen(PORT, async () => {
-        // Inicializar tablas
-        await initializeProgresoTable();
-        
+      // HTTP en desarrollo o producción sin SSL
+      console.log(`🌐 Iniciando servidor HTTP en puerto ${PORT}...`);
+      const server = app.listen(PORT, () => {
+        console.log(`✅ Servidor HTTP corriendo en puerto ${PORT}`);
+        console.log(`🌍 Entorno: ${NODE_ENV}`);
         logger.info({
-          message: 'Servidor HTTP iniciado exitosamente (Desarrollo)',
+          message: 'Servidor HTTP iniciado exitosamente',
           port: PORT,
           environment: NODE_ENV,
           database: process.env.DB_NAME,
